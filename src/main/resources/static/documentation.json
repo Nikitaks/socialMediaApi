@@ -1,0 +1,356 @@
+{
+	"openapi": "3.0.1",
+	"info": {
+		"title": "Social Media API - API социальной сети",
+		"description": "This API exposes endpoints to manage social media.",
+		"contact": {
+			"name": "Nikita Aksenov",
+			"url": "https://github.com/Nikitaks",
+			"email": "n.aksenov2015@yandex.ru"
+		},
+		"license": {
+			"name": "No License informatin",
+			"url": "#"
+		},
+		"version": "1.0"
+	},
+	"servers": [
+		{
+			"url": "http://localhost:8080",
+			"description": "Server URL in Development environment"
+		}
+	],
+	"paths": {
+		"/register": {
+			"get": {
+				"tags": [
+					"rest-user-controller"
+				],
+				"summary": "Get data about registration action",
+				"operationId": "getRegisterUser",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/Response"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": [
+					"rest-user-controller"
+				],
+				"operationId": "registerUser",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/User"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/Response"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/post/new": {
+			"post": {
+				"tags": [
+					"rest-user-controller"
+				],
+				"operationId": "newPost",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Post"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/Response"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/message/send/{userId}": {
+			"post": {
+				"tags": [
+					"rest-user-controller"
+				],
+				"operationId": "sendMessage",
+				"parameters": [
+					{
+						"name": "userId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer",
+							"format": "int64"
+						}
+					},
+					{
+						"name": "data",
+						"in": "query",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/Response"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/Response"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/friend/unsubscribe/{userId}": {
+			"post": {
+				"tags": [
+					"rest-user-controller"
+				],
+				"operationId": "unsubscribe",
+				"parameters": [
+					{
+						"name": "userId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer",
+							"format": "int64"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/Response"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/friend/subscribe/{userId}": {
+			"post": {
+				"tags": [
+					"rest-user-controller"
+				],
+				"operationId": "subscribe",
+				"parameters": [
+					{
+						"name": "userId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer",
+							"format": "int64"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/Response"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/post/update": {
+			"patch": {
+				"tags": [
+					"rest-user-controller"
+				],
+				"operationId": "updatePost",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Post"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/Response"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/post/show/{userid}": {
+			"get": {
+				"tags": [
+					"rest-user-controller"
+				],
+				"operationId": "showPost",
+				"parameters": [
+					{
+						"name": "userid",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer",
+							"format": "int64"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Post"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/delpost/{id}": {
+			"delete": {
+				"tags": [
+					"rest-user-controller"
+				],
+				"operationId": "deletePost",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer",
+							"format": "int64"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/Response"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"User": {
+				"type": "object",
+				"properties": {
+					"user_id": {
+						"type": "integer",
+						"format": "int64"
+					},
+					"name": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					}
+				}
+			},
+			"Response": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string"
+					}
+				}
+			},
+			"Post": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer",
+						"format": "int64"
+					},
+					"user": {
+						"type": "integer",
+						"format": "int64"
+					},
+					"header": {
+						"type": "string"
+					},
+					"content": {
+						"type": "string"
+					},
+					"imageurl": {
+						"type": "string"
+					},
+					"dateAndTime": {
+						"type": "string",
+						"format": "date-time"
+					}
+				}
+			}
+		}
+	}
+}
