@@ -76,7 +76,7 @@ public class RestUserController {
 	@Autowired
 	private MySQLUserDetailsService userDetailsService;
 
-	Logger logger = Logger.getLogger("RestUserController");
+	private Logger logger = Logger.getLogger("RestUserController");
 
 	@Operation(summary = "Unsecure. Checks if user loggined or returns message with register instructions")
     @ApiResponses(value = {
@@ -114,7 +114,8 @@ public class RestUserController {
             }),
     	@ApiResponse(
            	responseCode = "400",
-           	description = "User alredy exists",
+           	description = "One of messages: user alredy exists; "
+           			+ "name, password and email couldn't be empty or absent",
            	content = {
                	@Content(
                    	mediaType = "application/json",
@@ -125,21 +126,29 @@ public class RestUserController {
 	public ResponseEntity<Response> registerUser(@RequestBody User user, Authentication authentication) {
 		if (authentication != null) {
 			return ResponseEntity.badRequest()
-					.body(new Response("You are registered alredy. Your name: "
-							+ authentication.getName()));
+				.body(new Response("You are registered alredy. Your name: "
+				+ authentication.getName()));
 		}
 		List<User> checkIfExistsList =  userRepository.findByName(user.getName());
+		if (checkIfNamePasswordEmailEmptyOrNull(user)) {
+			return ResponseEntity.badRequest().body(new Response("Name, password and email couldn't be empty or absent"));
+		}
 		if (checkIfExistsList.isEmpty()) {
 			String encodedPassword = passwordEncoder.encode(user.getPassword());
 			user.setPassword(encodedPassword);
 			User savedUser = userRepository.save(user);
-			URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-				.buildAndExpand(savedUser.getUser_id()).toUri();
-			return ResponseEntity.created(location)
-				.body(new Response("User created"));
+			if (savedUser.isTheSameUser(user)) {
+				return ResponseEntity.created(null)
+					.body(new Response("User created"));
+			}
+			else {
+				return ResponseEntity.badRequest()
+					.body(new Response("Database saving problem"));
+			}
 		}
 		else {
-			return ResponseEntity.badRequest().body(new Response("User alredy exists"));
+			return ResponseEntity.badRequest()
+				.body(new Response("User alredy exists"));
 		}
 	}
 
@@ -223,14 +232,14 @@ public class RestUserController {
 			post.setUser(user.getUser_id());
 			post.setDateAndTime(LocalDateTime.now());
 			Post savedPost = postRepository.save(post);
-			URI location = ServletUriComponentsBuilder
-				.fromCurrentRequest()
-				.path("/{id}")
-				.buildAndExpand(savedPost.getId())
-				.toUri();
-
-			return ResponseEntity.created(location)
-				.body(new Response("Post created"));
+			if (savedPost.isTheSamePost(post)) {
+				return ResponseEntity.created(null)
+						.body(new Response("Post created"));
+			}
+			else {
+				return ResponseEntity.badRequest()
+					.body(new Response("Database saving problem"));
+			}			
 		}
 		else {
 			return ResponseEntity
@@ -547,6 +556,13 @@ public class RestUserController {
 		return postList;
 	}
 
+	private boolean checkIfNamePasswordEmailEmptyOrNull(User user) {
+		return "".equals(user.getEmail()) || "".equals(user.getName())
+			|| "".equals(user.getPassword())
+			|| user.getEmail() == null || user.getName() == null
+			|| user.getPassword() == null;
+	}
+
 	private List<Long> authors(Authentication authentication) {
 		Long user = userRepository.findFirstUser_idByName(authentication.getName()).getUser_id();
 
@@ -709,5 +725,77 @@ public class RestUserController {
 			}
 		}
 		return result;
+	}
+
+	public PasswordEncoder getPasswordEncoder() {
+		return passwordEncoder;
+	}
+
+	public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+		this.passwordEncoder = passwordEncoder;
+	}
+
+	public UserRepository getUserRepository() {
+		return userRepository;
+	}
+
+	public void setUserRepository(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
+
+	public PostRepository getPostRepository() {
+		return postRepository;
+	}
+
+	public void setPostRepository(PostRepository postRepository) {
+		this.postRepository = postRepository;
+	}
+
+	public FriendsSubscribersRepository getFriendsSubscribersRepository() {
+		return friendsSubscribersRepository;
+	}
+
+	public void setFriendsSubscribersRepository(FriendsSubscribersRepository friendsSubscribersRepository) {
+		this.friendsSubscribersRepository = friendsSubscribersRepository;
+	}
+
+	public MessageRepository getMessageRepository() {
+		return messageRepository;
+	}
+
+	public void setMessageRepository(MessageRepository messageRepository) {
+		this.messageRepository = messageRepository;
+	}
+
+	public AuthenticationManager getAuthenticationManager() {
+		return authenticationManager;
+	}
+
+	public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+		this.authenticationManager = authenticationManager;
+	}
+
+	public JwtTokenUtil getJwtTokenUtil() {
+		return jwtTokenUtil;
+	}
+
+	public void setJwtTokenUtil(JwtTokenUtil jwtTokenUtil) {
+		this.jwtTokenUtil = jwtTokenUtil;
+	}
+
+	public MySQLUserDetailsService getUserDetailsService() {
+		return userDetailsService;
+	}
+
+	public void setUserDetailsService(MySQLUserDetailsService userDetailsService) {
+		this.userDetailsService = userDetailsService;
+	}
+
+	public Logger getLogger() {
+		return logger;
+	}
+
+	public void setLogger(Logger logger) {
+		this.logger = logger;
 	}
 }

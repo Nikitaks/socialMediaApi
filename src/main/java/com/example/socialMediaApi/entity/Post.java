@@ -63,5 +63,9 @@ public class Post {
 	public void setDateAndTime(LocalDateTime dateAndTime) {
 		this.dateAndTime = dateAndTime;
 	}
-
+	public boolean isTheSamePost(Post post) {
+		return (this.header == null ? post.getHeader() == null : this.header.equals(post.getHeader()))
+				&& (this.content == null ? post.getContent() == null : this.content.equals(post.getContent()))
+				&& (this.imageurl == null ? post.getImageurl() == null : this.imageurl.equals(post.getImageurl()));
+	}
 }
