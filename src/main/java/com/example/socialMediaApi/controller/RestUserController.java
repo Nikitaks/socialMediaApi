@@ -176,14 +176,14 @@ public class RestUserController {
             })
     })
 	@PostMapping("/account/login")
-	public ResponseEntity<?> login(@RequestBody JwtRequest authenticationRequest) throws Exception {
+	public ResponseEntity<?> login(@RequestBody JwtRequest authenticationRequest) {
 		try {
 			authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 		}
 		catch (Exception e) {
 			return ResponseEntity
-					.status(HttpStatus.UNAUTHORIZED)
-					.body(new Response("Username or password incorrect"));
+				.status(HttpStatus.UNAUTHORIZED)
+				.body(new Response("Username or password incorrect"));
 		}
 		final UserDetails userDetails = userDetailsService
 				.loadUserByUsername(authenticationRequest.getUsername());
